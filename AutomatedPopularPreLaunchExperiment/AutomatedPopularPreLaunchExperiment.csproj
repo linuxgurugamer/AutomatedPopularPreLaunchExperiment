@@ -39,6 +39,7 @@
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AppleOptions.cs" />
     <Compile Include="AutomatedPopularPreLaunchExperiment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
