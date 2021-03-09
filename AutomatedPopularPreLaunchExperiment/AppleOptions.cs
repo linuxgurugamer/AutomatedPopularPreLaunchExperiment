@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using UnityEngine;
 
@@ -39,7 +40,17 @@ namespace AutomatedPopularPreLaunchExperiment
         [GameParameters.CustomParameterUI("Kerbal Lights use auto light sensors")]
         public bool kerbalLightsOn = true;
 
-        
+        public override void SetDifficultyPreset(GameParameters.Preset preset)
+        {
+        }
+
+        public override bool Enabled(MemberInfo member, GameParameters parameters)
+        {
+            if (member.Name == "EnabledForSave")
+                return true;
+
+            return true;
+        }
 
     }
 }
