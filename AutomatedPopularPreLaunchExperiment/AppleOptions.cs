@@ -16,12 +16,6 @@ namespace AutomatedPopularPreLaunchExperiment
         public override int SectionOrder { get { return 1; } }
         public override bool HasPresets { get { return true; } }
 
-        [GameParameters.CustomParameterUI("All On")]
-        public bool allOn = true;
-
-        [GameParameters.CustomParameterUI("Editor Filter By Size")]
-        public bool sizeFilterOn = true;
-
         [GameParameters.CustomParameterUI("SAS on for Ships and Probes")]
         public bool sasOn = true;
 
