@@ -40,6 +40,9 @@ namespace AutomatedPopularPreLaunchExperiment
         [GameParameters.CustomParameterUI("Warp lead time = 10 seconds")]
         public bool warp10 = true;
 
+        [GameParameters.CustomParameterUI("Autodeploy landing gear at 500m")]
+        public bool gear250 = true;
+
         public override void SetDifficultyPreset(GameParameters.Preset preset)
         {
         }

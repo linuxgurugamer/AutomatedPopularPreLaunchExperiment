@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ModuleWheels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -29,6 +30,9 @@ namespace AutomatedPopularPreLaunchExperiment
         public bool helmetLightOn = false;
         public bool autoSAS;
         public bool warpRateSet10;
+        public bool gearSet250;
+        public bool gearIsDeployed = false;
+        public bool gearCanDeploy;
         
             
 
@@ -49,6 +53,7 @@ namespace AutomatedPopularPreLaunchExperiment
                     lightSet = appleOptions.kerbalLightsOn;
                     autoSAS = appleOptions.autoSetSAS;
                     warpRateSet10 = appleOptions.warp10;
+                    gearSet250 = appleOptions.gear250;
                     
 
                     if (sasSet && !sasDone)
@@ -104,6 +109,20 @@ namespace AutomatedPopularPreLaunchExperiment
                         GameSettings.WARP_TO_MANNODE_MARGIN = 30F;
                     }
 
+                    if (gearSet250)
+                    {
+
+                        gearCanDeploy = false;
+
+                        foreach (var part in FlightGlobals.ActiveVessel.Parts)
+                        {
+                            if (part.HasModuleImplementing<ModuleWheelBase>())
+                            {
+                                Debug.Log("part has it " + part);
+                                gearCanDeploy = true;
+                            }
+                        }
+                    }
                     
                     
                 }
@@ -250,6 +269,7 @@ namespace AutomatedPopularPreLaunchExperiment
                     }
 
 
+                    
                    
 
                     
@@ -267,6 +287,51 @@ namespace AutomatedPopularPreLaunchExperiment
 
         public void FixedUpdate()
         {
+            if (HighLogic.LoadedSceneIsFlight)
+            {
+                if (gearCanDeploy)
+                {
+                    if (gearSet250 && !gearIsDeployed)
+                    {
+                        float vesHeight = FlightGlobals.ActiveVessel.heightFromTerrain;
+
+                        Debug.Log("vesHeight = " + vesHeight);
+
+                        if (vesHeight <= 500F)
+                        {
+                            FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.Gear, true);
+                            gearIsDeployed = true;
+                        }
+
+
+                    }
+                    else if (gearSet250 && gearIsDeployed)
+                    {
+                        float vesHeight = FlightGlobals.ActiveVessel.heightFromTerrain;
+
+                        Debug.Log("vesHeight = " + vesHeight);
+
+                        if (vesHeight > 500F)
+                        {
+                            FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.Gear, false);
+                            gearIsDeployed = false;
+                        }
+
+
+
+
+                    }
+
+
+
+                }
+
+            }
+
+
+
+
+
           
         }
 
