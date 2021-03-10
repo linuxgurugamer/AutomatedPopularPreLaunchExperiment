@@ -15,22 +15,23 @@ namespace AutomatedPopularPreLaunchExperiment
 
         public VesselType currentVesselType;
         public AppleOptions appleOptions;
-        private bool sasDone = false;
-        private bool sasSet;
-        private bool dispDone = false;
-        private bool dispSet;
-        private bool brakesDone = false;
-        private bool brakesSet;
-        private bool shipLightsAreOn = false;
-        private bool sLSet;
-        private bool visorSet;
-        private bool visorIsDown = false;
-        private bool lightSet;
-        private bool helmetLightOn = false;
+        public bool sasDone = false;
+        public bool sasSet;
+        public bool dispDone = false;
+        public bool dispSet;
+        public bool brakesDone = false;
+        public bool brakesSet;
+        public bool shipLightsAreOn = false;
+        public bool sLSet;
+        public bool visorSet;
+        public bool visorIsDown = false;
+        public KerbalEVA.VisorStates visorStates;
+        public bool lightSet;
+        public bool helmetLightOn = false;
         
 
 
-        private void Start()
+        public void Start()
         {
 
             if (HighLogic.LoadedSceneIsFlight)
@@ -76,6 +77,19 @@ namespace AutomatedPopularPreLaunchExperiment
                         }
                         brakesDone = true;                  
                     }
+
+                    if (FlightGlobals.ActiveVessel.isEVA)
+                    {
+                        visorStates = FlightGlobals.ActiveVessel.GetComponent<KerbalEVA>().VisorState;
+                        if (visorStates.Equals(KerbalEVA.VisorStates.Raised) || visorStates.Equals(KerbalEVA.VisorStates.Raising))
+                        {
+                            visorIsDown = false;
+                        }
+                        else if (visorStates.Equals(KerbalEVA.VisorStates.Lowered) || visorStates.Equals(KerbalEVA.VisorStates.Lowering))
+                        {
+                            visorIsDown = true;
+                        }
+                    }
                 
                 }
                 catch
@@ -86,7 +100,7 @@ namespace AutomatedPopularPreLaunchExperiment
         }
 
 
-        private void Update()
+        public void Update()
 
         {
             if (HighLogic.LoadedSceneIsFlight)
