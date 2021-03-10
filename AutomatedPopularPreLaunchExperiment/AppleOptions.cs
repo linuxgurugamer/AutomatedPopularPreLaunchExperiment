@@ -16,23 +16,29 @@ namespace AutomatedPopularPreLaunchExperiment
         public override int SectionOrder { get { return 1; } }
         public override bool HasPresets { get { return true; } }
 
-        [GameParameters.CustomParameterUI("SAS on for Ships and Probes")]
+        [GameParameters.CustomParameterUI("SAS on for ships and probes")]
         public bool sasOn = true;
 
-        [GameParameters.CustomParameterUI("Display to Ap/Pe Info")]
+        [GameParameters.CustomParameterUI("Display to Ap/Pe info")]
         public bool manNodeModeOn = true;
 
-        [GameParameters.CustomParameterUI("Set Brakes for Rovers and Planes")]
+        [GameParameters.CustomParameterUI("Set brakes for rovers and planes")]
         public bool brakesOn = true;
 
-        [GameParameters.CustomParameterUI("Vessel Lights use auto light sensors")]
+        [GameParameters.CustomParameterUI("Vessel lights use auto light sensors")]
         public bool shipLightsOn = true;
 
         [GameParameters.CustomParameterUI("Kerbal visors use auto light sensors")]
         public bool visorOn = true;
 
-        [GameParameters.CustomParameterUI("Kerbal Lights use auto light sensors")]
+        [GameParameters.CustomParameterUI("Kerbal lights use auto light sensors")]
         public bool kerbalLightsOn = true;
+
+        [GameParameters.CustomParameterUI("SAS mode set automatically")]
+        public bool autoSetSAS = true;
+
+        [GameParameters.CustomParameterUI("Warp lead time = 10 seconds")]
+        public bool warp10 = true;
 
         public override void SetDifficultyPreset(GameParameters.Preset preset)
         {

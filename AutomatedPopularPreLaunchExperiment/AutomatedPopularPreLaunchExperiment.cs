@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
-
+using UnityEngine.UI;
 
 namespace AutomatedPopularPreLaunchExperiment
 {
@@ -15,6 +14,7 @@ namespace AutomatedPopularPreLaunchExperiment
 
         public VesselType currentVesselType;
         public AppleOptions appleOptions;
+        public KerbalEVA.VisorStates visorStates;
         public bool sasDone = false;
         public bool sasSet;
         public bool dispDone = false;
@@ -25,11 +25,12 @@ namespace AutomatedPopularPreLaunchExperiment
         public bool sLSet;
         public bool visorSet;
         public bool visorIsDown = false;
-        public KerbalEVA.VisorStates visorStates;
         public bool lightSet;
         public bool helmetLightOn = false;
+        public bool autoSAS;
+        public bool warpRateSet10;
         
-
+            
 
         public void Start()
         {
@@ -46,6 +47,9 @@ namespace AutomatedPopularPreLaunchExperiment
                     sLSet = appleOptions.shipLightsOn;
                     visorSet = appleOptions.visorOn;
                     lightSet = appleOptions.kerbalLightsOn;
+                    autoSAS = appleOptions.autoSetSAS;
+                    warpRateSet10 = appleOptions.warp10;
+                    
 
                     if (sasSet && !sasDone)
                     {
@@ -90,7 +94,18 @@ namespace AutomatedPopularPreLaunchExperiment
                             visorIsDown = true;
                         }
                     }
-                
+
+                    if (warpRateSet10)
+                    {
+                        GameSettings.WARP_TO_MANNODE_MARGIN = 10F;
+                    }
+                    else if (!warpRateSet10)
+                    {
+                        GameSettings.WARP_TO_MANNODE_MARGIN = 30F;
+                    }
+
+                    
+                    
                 }
                 catch
                 {
@@ -208,13 +223,54 @@ namespace AutomatedPopularPreLaunchExperiment
                                 // no helmet
                             }
                         }
-                    }                
+                    }
+
+
+                    if (autoSAS)
+                    {
+                        try
+                        {
+                            if (FlightGlobals.ActiveVessel.Autopilot.CanSetMode(VesselAutopilot.AutopilotMode.Maneuver))
+                            {
+                                FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.SAS, true);
+                                FlightGlobals.ActiveVessel.Autopilot.SetMode(VesselAutopilot.AutopilotMode.Maneuver);
+                               
+                            }
+
+                            else
+                            {
+                                return;
+                            }
+                        }
+                        catch
+                        {
+                            return;
+                        }
+
+                    }
+
+
+                   
+
+                    
+
+
+
+
+
 
                 }
                 catch { // internal error
                 }
             }
         }
+
+        public void FixedUpdate()
+        {
+          
+        }
+
+        
 
     }
 }
