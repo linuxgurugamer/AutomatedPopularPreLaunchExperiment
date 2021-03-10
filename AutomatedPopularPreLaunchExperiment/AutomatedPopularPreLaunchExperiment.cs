@@ -38,7 +38,6 @@ namespace AutomatedPopularPreLaunchExperiment
 
         public void Start()
         {
-
             if (HighLogic.LoadedSceneIsFlight)
             {
                 try 
@@ -55,6 +54,7 @@ namespace AutomatedPopularPreLaunchExperiment
                     warpRateSet10 = appleOptions.warp10;
                     gearSet250 = appleOptions.gear250;
                     
+                    // set SAS on
 
                     if (sasSet && !sasDone)
                     {
@@ -67,6 +67,8 @@ namespace AutomatedPopularPreLaunchExperiment
                         sasDone = true;                 
                     }
 
+                    // change bottom/left panel to show Ap/Pe info
+
                     if (dispSet && !dispDone)
                     {
                         if (currentVesselType == VesselType.Lander || currentVesselType == VesselType.Plane ||
@@ -78,6 +80,8 @@ namespace AutomatedPopularPreLaunchExperiment
                         dispDone = true;
                     }
 
+                    // set brakes for planes/rovers
+
                     if (brakesSet && !brakesDone)
                     {
                         if (currentVesselType == VesselType.Rover || currentVesselType == VesselType.Plane)
@@ -86,6 +90,8 @@ namespace AutomatedPopularPreLaunchExperiment
                         }
                         brakesDone = true;                  
                     }
+
+                    // confirm visor state at start
 
                     if (FlightGlobals.ActiveVessel.isEVA)
                     {
@@ -100,6 +106,8 @@ namespace AutomatedPopularPreLaunchExperiment
                         }
                     }
 
+                    // set warp lead time
+
                     if (warpRateSet10)
                     {
                         GameSettings.WARP_TO_MANNODE_MARGIN = 10F;
@@ -108,6 +116,8 @@ namespace AutomatedPopularPreLaunchExperiment
                     {
                         GameSettings.WARP_TO_MANNODE_MARGIN = 30F;
                     }
+
+                    // check if any parts are landing gear/wheel related instead of having to check in fixedupdate
 
                     if (gearSet250)
                     {
@@ -118,7 +128,6 @@ namespace AutomatedPopularPreLaunchExperiment
                         {
                             if (part.HasModuleImplementing<ModuleWheelBase>())
                             {
-                                Debug.Log("part has it " + part);
                                 gearCanDeploy = true;
                             }
                         }
@@ -131,6 +140,7 @@ namespace AutomatedPopularPreLaunchExperiment
                     // internal error
                 }     
             }
+
         }
 
 
@@ -140,7 +150,7 @@ namespace AutomatedPopularPreLaunchExperiment
             if (HighLogic.LoadedSceneIsFlight)
             {
                 try
-                {
+                {                   // Vessel lights
                     if (sLSet)
                     {
 
@@ -184,6 +194,8 @@ namespace AutomatedPopularPreLaunchExperiment
                         }
                     }
 
+                    // visor control
+
                     if (visorSet)
                     {
                         if (FlightGlobals.ActiveVessel.isEVA && FlightGlobals.ActiveVessel.directSunlight && !visorIsDown)
@@ -215,6 +227,8 @@ namespace AutomatedPopularPreLaunchExperiment
                         }
                     }
 
+                    // helmet light
+
                     if (lightSet)
                     {
                         if (FlightGlobals.ActiveVessel.isEVA && FlightGlobals.ActiveVessel.directSunlight && helmetLightOn)
@@ -244,6 +258,7 @@ namespace AutomatedPopularPreLaunchExperiment
                         }
                     }
 
+                    // auto manueuver node selector on SAS
 
                     if (autoSAS)
                     {
@@ -253,7 +268,6 @@ namespace AutomatedPopularPreLaunchExperiment
                             {
                                 FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.SAS, true);
                                 FlightGlobals.ActiveVessel.Autopilot.SetMode(VesselAutopilot.AutopilotMode.Maneuver);
-                               
                             }
 
                             else
@@ -267,18 +281,6 @@ namespace AutomatedPopularPreLaunchExperiment
                         }
 
                     }
-
-
-                    
-                   
-
-                    
-
-
-
-
-
-
                 }
                 catch { // internal error
                 }
@@ -287,6 +289,9 @@ namespace AutomatedPopularPreLaunchExperiment
 
         public void FixedUpdate()
         {
+
+            // landing gear here due to terrain height check
+
             if (HighLogic.LoadedSceneIsFlight)
             {
                 if (gearCanDeploy)
@@ -295,21 +300,16 @@ namespace AutomatedPopularPreLaunchExperiment
                     {
                         float vesHeight = FlightGlobals.ActiveVessel.heightFromTerrain;
 
-                        Debug.Log("vesHeight = " + vesHeight);
-
                         if (vesHeight <= 500F)
                         {
                             FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.Gear, true);
                             gearIsDeployed = true;
                         }
 
-
                     }
                     else if (gearSet250 && gearIsDeployed)
                     {
                         float vesHeight = FlightGlobals.ActiveVessel.heightFromTerrain;
-
-                        Debug.Log("vesHeight = " + vesHeight);
 
                         if (vesHeight > 500F)
                         {
@@ -317,25 +317,13 @@ namespace AutomatedPopularPreLaunchExperiment
                             gearIsDeployed = false;
                         }
 
-
-
-
                     }
-
-
 
                 }
 
             }
-
-
-
-
-
           
         }
-
-        
 
     }
 }
