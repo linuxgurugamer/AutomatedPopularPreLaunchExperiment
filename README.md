@@ -1,4 +1,4 @@
-# Automated Popular Pre-Launch Experiment (A.P.P.L.E.) v1.0.1
+# Automated Popular Pre-Launch Experiment (A.P.P.L.E.) v1.1.0
 
 DESCRIPTION
 
