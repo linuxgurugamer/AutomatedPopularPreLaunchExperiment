@@ -1,4 +1,4 @@
-# Automated Popular Pre-Launch Experiment (A.P.P.L.E.)
+# Automated Popular Pre-Launch Experiment (A.P.P.L.E.) v1.0.1
 
 DESCRIPTION
 
@@ -10,22 +10,22 @@ A small mod to eleviate some of the monotonous tasks in KSP:
 - auto toggle active vessel lights depending on whether it is light or dark
 - auto toggle Kerbal helmet lights depending on whether it is light or dark
 - auto toggle Kerbal visor (up/down) depending on whether it is light or dark
+- auto SAS mode to "Node" when you create a maneauver node
+- auto landing gear deployment/retraction at 500m
+- warp lead time changed from 30 secs to 10 secs
 
 
 NOTES
 
-- options are configurable to be on/off in the Game Settings menu should you not want certain things
-- going EVA with a Kerbal who defaults on having helmet removed on Kerbin sometimes affects the visor
-  section. No idea why, headlamps work correctly, therefore Unity/game bug
-- Vessel lights only trigger when vessel is active
+- Options are configurable to be on/off in the Game Settings menu should you not want certain things
+- Vessel lights currently only trigger when vessel is active
+- Due to design, when you first create a maneuver node, the navball will spin until you move one of
+  the handles and an actual node is created on the navball.
 
 
 FUTURE DEVELOPMENT
 
 - vessel lights trigger when vessel ISN'T active
-- auto SAS mode selection
-- auto landing gear deployment
-- auto extendibles
 - editor filter mode
 
 
