@@ -1,9 +1,9 @@
-﻿using System;
+﻿using ModuleWheels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
-
+using UnityEngine.UI;
 
 namespace AutomatedPopularPreLaunchExperiment
 {
@@ -15,22 +15,28 @@ namespace AutomatedPopularPreLaunchExperiment
 
         public VesselType currentVesselType;
         public AppleOptions appleOptions;
-        private bool sasDone = false;
-        private bool sasSet;
-        private bool dispDone = false;
-        private bool dispSet;
-        private bool brakesDone = false;
-        private bool brakesSet;
-        private bool shipLightsAreOn = false;
-        private bool sLSet;
-        private bool visorSet;
-        private bool visorIsDown = false;
-        private bool lightSet;
-        private bool helmetLightOn = false;
+        public KerbalEVA.VisorStates visorStates;
+        public bool sasDone = false;
+        public bool sasSet;
+        public bool dispDone = false;
+        public bool dispSet;
+        public bool brakesDone = false;
+        public bool brakesSet;
+        public bool shipLightsAreOn = false;
+        public bool sLSet;
+        public bool visorSet;
+        public bool visorIsDown = false;
+        public bool lightSet;
+        public bool helmetLightOn = false;
+        public bool autoSAS;
+        public bool warpRateSet10;
+        public bool gearSet250;
+        public bool gearIsDeployed = false;
+        public bool gearCanDeploy;
         
+            
 
-
-        private void Start()
+        public void Start()
         {
 
             if (HighLogic.LoadedSceneIsFlight)
@@ -45,6 +51,10 @@ namespace AutomatedPopularPreLaunchExperiment
                     sLSet = appleOptions.shipLightsOn;
                     visorSet = appleOptions.visorOn;
                     lightSet = appleOptions.kerbalLightsOn;
+                    autoSAS = appleOptions.autoSetSAS;
+                    warpRateSet10 = appleOptions.warp10;
+                    gearSet250 = appleOptions.gear250;
+                    
 
                     if (sasSet && !sasDone)
                     {
@@ -76,7 +86,45 @@ namespace AutomatedPopularPreLaunchExperiment
                         }
                         brakesDone = true;                  
                     }
-                
+
+                    if (FlightGlobals.ActiveVessel.isEVA)
+                    {
+                        visorStates = FlightGlobals.ActiveVessel.GetComponent<KerbalEVA>().VisorState;
+                        if (visorStates.Equals(KerbalEVA.VisorStates.Raised) || visorStates.Equals(KerbalEVA.VisorStates.Raising))
+                        {
+                            visorIsDown = false;
+                        }
+                        else if (visorStates.Equals(KerbalEVA.VisorStates.Lowered) || visorStates.Equals(KerbalEVA.VisorStates.Lowering))
+                        {
+                            visorIsDown = true;
+                        }
+                    }
+
+                    if (warpRateSet10)
+                    {
+                        GameSettings.WARP_TO_MANNODE_MARGIN = 10F;
+                    }
+                    else if (!warpRateSet10)
+                    {
+                        GameSettings.WARP_TO_MANNODE_MARGIN = 30F;
+                    }
+
+                    if (gearSet250)
+                    {
+
+                        gearCanDeploy = false;
+
+                        foreach (var part in FlightGlobals.ActiveVessel.Parts)
+                        {
+                            if (part.HasModuleImplementing<ModuleWheelBase>())
+                            {
+                                Debug.Log("part has it " + part);
+                                gearCanDeploy = true;
+                            }
+                        }
+                    }
+                    
+                    
                 }
                 catch
                 {
@@ -86,7 +134,7 @@ namespace AutomatedPopularPreLaunchExperiment
         }
 
 
-        private void Update()
+        public void Update()
 
         {
             if (HighLogic.LoadedSceneIsFlight)
@@ -194,13 +242,100 @@ namespace AutomatedPopularPreLaunchExperiment
                                 // no helmet
                             }
                         }
-                    }                
+                    }
+
+
+                    if (autoSAS)
+                    {
+                        try
+                        {
+                            if (FlightGlobals.ActiveVessel.Autopilot.CanSetMode(VesselAutopilot.AutopilotMode.Maneuver))
+                            {
+                                FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.SAS, true);
+                                FlightGlobals.ActiveVessel.Autopilot.SetMode(VesselAutopilot.AutopilotMode.Maneuver);
+                               
+                            }
+
+                            else
+                            {
+                                return;
+                            }
+                        }
+                        catch
+                        {
+                            return;
+                        }
+
+                    }
+
+
+                    
+                   
+
+                    
+
+
+
+
+
 
                 }
                 catch { // internal error
                 }
             }
         }
+
+        public void FixedUpdate()
+        {
+            if (HighLogic.LoadedSceneIsFlight)
+            {
+                if (gearCanDeploy)
+                {
+                    if (gearSet250 && !gearIsDeployed)
+                    {
+                        float vesHeight = FlightGlobals.ActiveVessel.heightFromTerrain;
+
+                        Debug.Log("vesHeight = " + vesHeight);
+
+                        if (vesHeight <= 500F)
+                        {
+                            FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.Gear, true);
+                            gearIsDeployed = true;
+                        }
+
+
+                    }
+                    else if (gearSet250 && gearIsDeployed)
+                    {
+                        float vesHeight = FlightGlobals.ActiveVessel.heightFromTerrain;
+
+                        Debug.Log("vesHeight = " + vesHeight);
+
+                        if (vesHeight > 500F)
+                        {
+                            FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.Gear, false);
+                            gearIsDeployed = false;
+                        }
+
+
+
+
+                    }
+
+
+
+                }
+
+            }
+
+
+
+
+
+          
+        }
+
+        
 
     }
 }
