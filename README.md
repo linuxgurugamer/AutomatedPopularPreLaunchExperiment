@@ -11,7 +11,7 @@ A small mod to eleviate some of the monotonous tasks in KSP:
 - auto toggle Kerbal helmet lights depending on whether it is light or dark
 - auto toggle Kerbal visor (up/down) depending on whether it is light or dark
 - auto SAS mode to "Node" when you create a maneauver node
-- auto landing gear deployment/retraction at 1000m/500m respectively
+- auto landing gear deployment/retraction at 1000m/100m respectively
 - warp lead time changed from 30 secs to 10 secs
 
 
