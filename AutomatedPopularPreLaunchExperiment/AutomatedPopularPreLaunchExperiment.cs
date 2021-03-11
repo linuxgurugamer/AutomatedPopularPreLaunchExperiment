@@ -121,7 +121,6 @@ namespace AutomatedPopularPreLaunchExperiment
 
                     if (gearSet250)
                     {
-
                         gearCanDeploy = false;
 
                         foreach (var part in FlightGlobals.ActiveVessel.Parts)
@@ -296,29 +295,33 @@ namespace AutomatedPopularPreLaunchExperiment
             {
                 if (gearCanDeploy)
                 {
-                    if (gearSet250 && !gearIsDeployed)
+                    if (FlightGlobals.ActiveVessel.vesselType == VesselType.Plane || FlightGlobals.ActiveVessel.vesselType ==
+                        VesselType.Rover || FlightGlobals.ActiveVessel.vesselType == VesselType.Lander)
                     {
-                        float vesHeight = FlightGlobals.ActiveVessel.heightFromTerrain;
 
-                        if (vesHeight <= 500F)
+                        if (gearSet250 && !gearIsDeployed)
                         {
-                            FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.Gear, true);
-                            gearIsDeployed = true;
+                            float vesHeight = FlightGlobals.ActiveVessel.heightFromTerrain;
+
+                            if (vesHeight <= 1000F)
+                            {
+                                FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.Gear, true);
+                                gearIsDeployed = true;
+                            }
+
                         }
-
-                    }
-                    else if (gearSet250 && gearIsDeployed)
-                    {
-                        float vesHeight = FlightGlobals.ActiveVessel.heightFromTerrain;
-
-                        if (vesHeight > 500F)
+                        else if (gearSet250 && gearIsDeployed)
                         {
-                            FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.Gear, false);
-                            gearIsDeployed = false;
+                            float vesHeight = FlightGlobals.ActiveVessel.heightFromTerrain;
+
+                            if (vesHeight > 100F)
+                            {
+                                FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.Gear, false);
+                                gearIsDeployed = false;
+                            }
+
                         }
-
                     }
-
                 }
 
             }
