@@ -41,6 +41,10 @@ namespace AutomatedPopularPreLaunchExperiment
         public float retHeight;
         public float currentHeight;
         public List<Part> listOfDeployables = new List<Part>();
+        
+
+       
+
 
         public void Start()
         {
@@ -138,7 +142,7 @@ namespace AutomatedPopularPreLaunchExperiment
                         {
                            
 
-                            if (listOfDeployables.Count > 0 || listOfDeployables.Count != null)
+                            if (listOfDeployables.Count > 0)
                             {
                                 LandingGearProcessor lpg = new LandingGearProcessor(FlightGlobals.ActiveVessel,
                             FlightGlobals.ActiveVessel.vesselType, listOfDeployables, FlightGlobals.ActiveVessel.Landed);
@@ -180,6 +184,8 @@ namespace AutomatedPopularPreLaunchExperiment
             }
 
         }
+
+       
 
 
         public void Update()
@@ -302,10 +308,14 @@ namespace AutomatedPopularPreLaunchExperiment
                         {
                             if (FlightGlobals.ActiveVessel.Autopilot.CanSetMode(VesselAutopilot.AutopilotMode.Maneuver))
                             {
-                                FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.SAS, true);
-                                FlightGlobals.ActiveVessel.Autopilot.SetMode(VesselAutopilot.AutopilotMode.Maneuver);
-                            }
 
+                                
+                                    FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.SAS, true);
+                                    FlightGlobals.ActiveVessel.Autopilot.SetMode(VesselAutopilot.AutopilotMode.Maneuver);
+                                    
+                                
+                                
+                            }
                             else
                             {
                                 return;
