@@ -31,16 +31,22 @@ namespace AutomatedPopularPreLaunchExperiment
         public bool autoSAS;
         public bool warpRateSet10;
         public bool gearSet250;
+        public bool gearPermit = false;
+        public bool startStatus = false;
+        public bool armStatus = false;
         public bool gearIsDeployed = false;
-        public bool gearCanDeploy;
-        
-            
+        public float[] dataArr = new float[3];
+        public float armHeight;
+        public float depHeight;
+        public float retHeight;
+        public float currentHeight;
+        public List<Part> listOfDeployables = new List<Part>();
 
         public void Start()
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
-                try 
+                try
                 {
                     appleOptions = HighLogic.CurrentGame.Parameters.CustomParams<AppleOptions>();
                     currentVesselType = FlightGlobals.ActiveVessel.vesselType;
@@ -53,18 +59,18 @@ namespace AutomatedPopularPreLaunchExperiment
                     autoSAS = appleOptions.autoSetSAS;
                     warpRateSet10 = appleOptions.warp10;
                     gearSet250 = appleOptions.gear250;
-                    
+
                     // set SAS on
 
                     if (sasSet && !sasDone)
                     {
-                        if (currentVesselType == VesselType.Lander || currentVesselType == VesselType.Plane || 
+                        if (currentVesselType == VesselType.Lander || currentVesselType == VesselType.Plane ||
                             currentVesselType == VesselType.Probe || currentVesselType == VesselType.Ship)
                         {
                             FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.SAS, true);
                         }
 
-                        sasDone = true;                 
+                        sasDone = true;
                     }
 
                     // change bottom/left panel to show Ap/Pe info
@@ -88,7 +94,7 @@ namespace AutomatedPopularPreLaunchExperiment
                         {
                             FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.Brakes, true);
                         }
-                        brakesDone = true;                  
+                        brakesDone = true;
                     }
 
                     // confirm visor state at start
@@ -117,21 +123,54 @@ namespace AutomatedPopularPreLaunchExperiment
                         GameSettings.WARP_TO_MANNODE_MARGIN = 30F;
                     }
 
-                    // check if any parts are landing gear/wheel related instead of having to check in fixedupdate
 
                     if (gearSet250)
                     {
-                        gearCanDeploy = false;
-
                         foreach (var part in FlightGlobals.ActiveVessel.Parts)
                         {
-                            if (part.HasModuleImplementing<ModuleWheelBase>())
+                            if (part.HasModuleImplementing<ModuleWheelDeployment>())
                             {
-                                gearCanDeploy = true;
+                                listOfDeployables.Add(part);                                // redundant but kept for future use
                             }
                         }
+
+                        try
+                        {
+                           
+
+                            if (listOfDeployables.Count > 0 || listOfDeployables.Count != null)
+                            {
+                                LandingGearProcessor lpg = new LandingGearProcessor(FlightGlobals.ActiveVessel,
+                            FlightGlobals.ActiveVessel.vesselType, listOfDeployables, FlightGlobals.ActiveVessel.Landed);
+
+                                gearPermit = lpg.ProcessOutput();
+                                startStatus = lpg.StartStateOk();
+
+                                if (gearPermit)
+                                {
+                                    dataArr = lpg.VesHeight();    
+
+                                    if (dataArr[0] != 0)
+                                    {
+                                        armHeight = dataArr[0];
+                                        depHeight = dataArr[1];
+                                        retHeight = dataArr[2];
+                                        armStatus = false;
+                                    }
+
+                                    else gearPermit = false;  // internal error
+
+                                }
+                                
+                            }
+                        }
+                        catch
+                        {
+                            return;
+                            // no deployables
+                        }                     
+
                     }
-                    
                     
                 }
                 catch
@@ -210,8 +249,6 @@ namespace AutomatedPopularPreLaunchExperiment
                             }
                         }
 
-                        
-
                         else if (FlightGlobals.ActiveVessel.isEVA && !FlightGlobals.ActiveVessel.directSunlight && visorIsDown)
                         {
                             try
@@ -279,54 +316,70 @@ namespace AutomatedPopularPreLaunchExperiment
                             return;
                         }
 
-                    }
+                    }                    
+
                 }
                 catch { // internal error
                 }
             }
         }
 
+
         public void FixedUpdate()
         {
+            // Auto gear deployment. Raycast = physics = fixedupdate
 
-            // landing gear here due to terrain height check
-
-            if (HighLogic.LoadedSceneIsFlight)
+            if (HighLogic.LoadedSceneIsFlight && gearSet250 && gearPermit)
             {
-                if (gearCanDeploy)
-                {
-                    if (FlightGlobals.ActiveVessel.vesselType == VesselType.Plane || FlightGlobals.ActiveVessel.vesselType ==
-                        VesselType.Rover || FlightGlobals.ActiveVessel.vesselType == VesselType.Lander)
+                currentHeight = FlightGlobals.ActiveVessel.heightFromTerrain;
+
+                    if (!armStatus)                                 // requires min height arming to prevent action on startup
+                    {
+                        if (currentHeight >= armHeight)
+                        {
+                            armStatus = true;
+                        }
+                        else armStatus = false;
+                    }
+
+                    else
                     {
 
-                        if (gearSet250 && !gearIsDeployed)
+                        if (currentHeight <= depHeight && !gearIsDeployed)
                         {
-                            float vesHeight = FlightGlobals.ActiveVessel.heightFromTerrain;
-
-                            if (vesHeight <= 1000F)
-                            {
-                                FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.Gear, true);
-                                gearIsDeployed = true;
-                            }
-
+                            FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.Gear, true);
+                            gearIsDeployed = true;
                         }
-                        else if (gearSet250 && gearIsDeployed)
+
+                        else if (currentHeight <= depHeight && gearIsDeployed)
                         {
-                            float vesHeight = FlightGlobals.ActiveVessel.heightFromTerrain;
-
-                            if (vesHeight > 100F)
-                            {
-                                FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.Gear, false);
-                                gearIsDeployed = false;
-                            }
-
+                            return;
                         }
+
+                        else if (currentHeight >= retHeight && gearIsDeployed)
+                        {
+                            FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.Gear, false);
+                            gearIsDeployed = false;
+                            armStatus = false;
+                        }
+                        else if (currentHeight >= retHeight && !gearIsDeployed)
+                        {
+                            return;
+                        }
+
+
                     }
+
+
                 }
+                
 
             }
-          
+
+
+
         }
 
+       
     }
-}
+

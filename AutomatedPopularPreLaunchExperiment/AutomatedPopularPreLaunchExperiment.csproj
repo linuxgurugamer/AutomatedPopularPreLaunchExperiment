@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="AppleOptions.cs" />
     <Compile Include="AutomatedPopularPreLaunchExperiment.cs" />
+    <Compile Include="LandingGearProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
