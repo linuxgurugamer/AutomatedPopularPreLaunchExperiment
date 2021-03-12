@@ -24,10 +24,10 @@ namespace AutomatedPopularPreLaunchExperiment
             landed = _landed;
         }
 
-        // only planes & landers permitted to deploy
+        // check not something that shouldn't deploy
         public bool ProcessOutput()
         {
-            if (vesType == VesselType.Plane || vesType == VesselType.Lander)
+            if (vesType != VesselType.Debris || vesType != VesselType.Unknown)
             {
                 vesCode = true;
             }
@@ -65,15 +65,11 @@ namespace AutomatedPopularPreLaunchExperiment
             {
                 toReturn = new float[3] { 2000.0F, 1000.0F, 200.0F };
             }
-            else if (vesType == VesselType.Lander)
+            else
             {
                 toReturn = new float[3] { 1500.0F, 1000.0F, 50.0F };
             }
-            else
-            {
-                toReturn = new float[3] { 0F, 0F, 0F };
-            } 
-
+            
             return toReturn;
 
 
