@@ -43,6 +43,7 @@
     <Compile Include="AutomatedPopularPreLaunchExperiment.cs" />
     <Compile Include="LandingGearProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SASManipulator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
