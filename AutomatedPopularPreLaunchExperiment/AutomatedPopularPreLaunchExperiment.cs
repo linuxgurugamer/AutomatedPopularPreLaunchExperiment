@@ -16,6 +16,7 @@ namespace AutomatedPopularPreLaunchExperiment
         public VesselType currentVesselType;
         public AppleOptions appleOptions;
         public KerbalEVA.VisorStates visorStates;
+        public SASManipulator sm;
         public bool sasDone = false;
         public bool sasSet;
         public bool dispDone = false;
@@ -35,6 +36,8 @@ namespace AutomatedPopularPreLaunchExperiment
         public bool startStatus = false;
         public bool armStatus = false;
         public bool gearIsDeployed = false;
+        public bool smIsCalled = false;
+        public bool activateSASNow = false;
         public float[] dataArr = new float[3];
         public float armHeight;
         public float depHeight;
@@ -64,7 +67,7 @@ namespace AutomatedPopularPreLaunchExperiment
                     warpRateSet10 = appleOptions.warp10;
                     gearSet250 = appleOptions.gear250;
 
-                    // set SAS on
+                    // set SAS button on at launch
 
                     if (sasSet && !sasDone)
                     {
@@ -106,6 +109,7 @@ namespace AutomatedPopularPreLaunchExperiment
                     if (FlightGlobals.ActiveVessel.isEVA)
                     {
                         visorStates = FlightGlobals.ActiveVessel.GetComponent<KerbalEVA>().VisorState;
+
                         if (visorStates.Equals(KerbalEVA.VisorStates.Raised) || visorStates.Equals(KerbalEVA.VisorStates.Raising))
                         {
                             visorIsDown = false;
@@ -140,7 +144,6 @@ namespace AutomatedPopularPreLaunchExperiment
 
                         try
                         {
-                           
 
                             if (listOfDeployables.Count > 0)
                             {
@@ -218,7 +221,7 @@ namespace AutomatedPopularPreLaunchExperiment
 
 
 
-                        // turn off lights if in sunlight
+                        // turn off lights if in sunlight unless player has done so already
 
                         else if (FlightGlobals.ActiveVessel.directSunlight && shipLightsAreOn)
                         {
@@ -308,26 +311,45 @@ namespace AutomatedPopularPreLaunchExperiment
                         {
                             if (FlightGlobals.ActiveVessel.Autopilot.CanSetMode(VesselAutopilot.AutopilotMode.Maneuver))
                             {
+                                // if sm Class unassigned then assign
 
+                                if (!smIsCalled)
+                                {
+                                    sm = new SASManipulator();
+                                    smIsCalled = true;
+                                }
+
+                                // want to call this same frame hence "if". Checks for change in maneuver node dV
+
+                                if (smIsCalled)
+                                {
+                                    activateSASNow = sm.ClearedToProceed();
+                                }
                                 
+                                // if change detected, move to maneuver node on SAS, but disable lock allowing player to select another mode if they need to
+
+                                if (activateSASNow)
+                                {
                                     FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.SAS, true);
                                     FlightGlobals.ActiveVessel.Autopilot.SetMode(VesselAutopilot.AutopilotMode.Maneuver);
-                                    
-                                
+                                    smIsCalled = false;
+                                    activateSASNow = false;
+                                }
+                                else return;                               
                                 
                             }
                             else
                             {
-                                return;
+                                sm = null;
+                                smIsCalled = false;
+                                activateSASNow = false;
                             }
                         }
                         catch
                         {
                             return;
                         }
-
                     }                    
-
                 }
                 catch { // internal error
                 }
@@ -337,7 +359,7 @@ namespace AutomatedPopularPreLaunchExperiment
 
         public void FixedUpdate()
         {
-            // Auto gear deployment. Raycast = physics = fixedupdate
+            // Auto gear deployment : Raycast = physics = fixedupdate
 
             if (HighLogic.LoadedSceneIsFlight && gearSet250 && gearPermit)
             {
@@ -351,6 +373,8 @@ namespace AutomatedPopularPreLaunchExperiment
                         }
                         else armStatus = false;
                     }
+
+                    // only called if armStatus is true...
 
                     else
                     {
@@ -377,19 +401,12 @@ namespace AutomatedPopularPreLaunchExperiment
                             return;
                         }
 
-
                     }
 
-
                 }
-                
 
             }
 
-
-
         }
-
-       
     }
 
