@@ -16,6 +16,7 @@ namespace AutomatedPopularPreLaunchExperiment
             storedNode = LoadNode();
         }
 
+
         private Vector3d LoadNode()
         {
             Vector3d toReturn = new Vector3d(0, 0, 0);
@@ -39,14 +40,24 @@ namespace AutomatedPopularPreLaunchExperiment
 
         public bool ClearedToProceed()
         {
-            node = LoadNode();
+            // if node premade (ie MechJeb or KAC restore node)
 
-            if (node != storedNode)
+            if (storedNode.x != 0 || storedNode.y != 0 || storedNode.z != 0)
             {
                 return true;
             }
-            else return false;
+            else
+            {
+                // wait till player adjusts handles before trying to execute autoSAS
 
+                node = LoadNode();
+
+                if (node != storedNode)
+                {
+                    return true;
+                }
+                else return false;
+            }
         }
 
     }
