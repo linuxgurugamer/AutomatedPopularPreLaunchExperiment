@@ -29,6 +29,8 @@ namespace AutomatedPopularPreLaunchExperiment
         public bool visorIsDown = false;
         public bool lightSet;
         public bool helmetLightOn = false;
+        public bool remHelmetSet;
+        public bool helmetRemoved = false;
         public bool autoSAS;
         public bool warpRateSet10;
         public bool gearSet250;
@@ -66,6 +68,7 @@ namespace AutomatedPopularPreLaunchExperiment
                     autoSAS = appleOptions.autoSetSAS;
                     warpRateSet10 = appleOptions.warp10;
                     gearSet250 = appleOptions.gear250;
+                    remHelmetSet = appleOptions.kerbalRemoveHelmet;
 
                     // set SAS button on at launch
 
@@ -302,6 +305,52 @@ namespace AutomatedPopularPreLaunchExperiment
                             }
                         }
                     }
+
+                    // set helmet status
+
+                    if (remHelmetSet)
+                    {
+                        try
+                        {
+                            if (FlightGlobals.ActiveVessel.isEVA && !helmetRemoved)
+                            {
+                                if (FlightGlobals.ActiveVessel.GetComponent<KerbalEVA>().CanSafelyRemoveHelmet())
+                                {
+                                    FlightGlobals.ActiveVessel.GetComponent<KerbalEVA>().ToggleHelmetAndNeckRing(false, false);
+                                    helmetRemoved = true;
+                                }
+
+
+                            }
+
+                            else if (FlightGlobals.ActiveVessel.isEVA && helmetRemoved)
+                            {
+
+                                if (!FlightGlobals.ActiveVessel.GetComponent<KerbalEVA>().CanSafelyRemoveHelmet())
+                                {
+                                    FlightGlobals.ActiveVessel.GetComponent<KerbalEVA>().ToggleHelmetAndNeckRing(true, true);
+                                    helmetRemoved = false;
+                                }
+
+                            }
+
+
+
+                        }
+                        catch
+                        {
+
+                        }
+                    }
+
+
+
+
+
+
+
+
+
 
                     // auto manueuver node selector on SAS
 
