@@ -34,6 +34,9 @@ namespace AutomatedPopularPreLaunchExperiment
         [GameParameters.CustomParameterUI("Kerbal lights use auto light sensors")]
         public bool kerbalLightsOn = true;
 
+        [GameParameters.CustomFloatParameterUI("Kerbal removes helmet where possible")]
+        public bool kerbalRemoveHelmet = true;
+
         [GameParameters.CustomParameterUI("SAS mode set automatically")]
         public bool autoSetSAS = true;
 
