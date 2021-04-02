@@ -16,13 +16,13 @@ namespace AutomatedPopularPreLaunchExperiment
         public override int SectionOrder { get { return 1; } }
         public override bool HasPresets { get { return true; } }
 
-        [GameParameters.CustomParameterUI("SAS on for ships and probes")]
+        [GameParameters.CustomParameterUI("Auto SAS on for ships and probes")]
         public bool sasOn = true;
 
-        [GameParameters.CustomParameterUI("Display to Ap/Pe info")]
+        [GameParameters.CustomParameterUI("Set display to Ap/Pe info")]
         public bool manNodeModeOn = true;
 
-        [GameParameters.CustomParameterUI("Set brakes for rovers and planes")]
+        [GameParameters.CustomParameterUI("Set brakes for rovers & planes")]
         public bool brakesOn = true;
 
         [GameParameters.CustomParameterUI("Vessel lights use auto light sensors")]
@@ -34,7 +34,7 @@ namespace AutomatedPopularPreLaunchExperiment
         [GameParameters.CustomParameterUI("Kerbal lights use auto light sensors")]
         public bool kerbalLightsOn = true;
 
-        [GameParameters.CustomFloatParameterUI("Kerbal removes helmet where possible")]
+        [GameParameters.CustomFloatParameterUI("Kerbal removes/adds helmet where possible")]
         public bool kerbalRemoveHelmet = true;
 
         [GameParameters.CustomParameterUI("SAS mode set automatically")]
@@ -43,7 +43,7 @@ namespace AutomatedPopularPreLaunchExperiment
         [GameParameters.CustomParameterUI("Warp lead time = 10 seconds")]
         public bool warp10 = true;
 
-        [GameParameters.CustomParameterUI("Autodeploy landing gear at 500m")]
+        [GameParameters.CustomParameterUI("Autodeploy landing gear at 1000m")]
         public bool gear250 = true;
 
         public override void SetDifficultyPreset(GameParameters.Preset preset)
