@@ -8,7 +8,6 @@ using UnityEngine.UI;
 namespace AutomatedPopularPreLaunchExperiment
 {
     [KSPAddon(KSPAddon.Startup.Flight, false)]
-
     public class AutomatedPopularPreLaunchExperiment : MonoBehaviour
     {
         // KSPFields set
@@ -46,10 +45,6 @@ namespace AutomatedPopularPreLaunchExperiment
         public float retHeight;
         public float currentHeight;
         public List<Part> listOfDeployables = new List<Part>();
-        
-
-       
-
 
         public void Start()
         {
@@ -158,7 +153,7 @@ namespace AutomatedPopularPreLaunchExperiment
 
                                 if (gearPermit)
                                 {
-                                    dataArr = lpg.VesHeight();    
+                                    dataArr = lpg.VesHeight();
 
                                     if (dataArr[0] != 0)
                                     {
@@ -171,31 +166,30 @@ namespace AutomatedPopularPreLaunchExperiment
                                     else gearPermit = false;  // internal error
 
                                 }
-                                
+
                             }
                         }
                         catch
                         {
                             return;
                             // no deployables
-                        }                     
+                        }
 
                     }
-                    
+
                 }
                 catch
                 {
                     // internal error
-                }     
+                }
             }
 
         }
 
-       
+
 
 
         public void Update()
-
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
@@ -344,14 +338,6 @@ namespace AutomatedPopularPreLaunchExperiment
                     }
 
 
-
-
-
-
-
-
-
-
                     // auto manueuver node selector on SAS
 
                     if (autoSAS)
@@ -374,7 +360,7 @@ namespace AutomatedPopularPreLaunchExperiment
                                 {
                                     activateSASNow = sm.ClearedToProceed();
                                 }
-                                
+
                                 // if change detected, move to maneuver node on SAS, but disable lock allowing player to select another mode if they need to
 
                                 if (activateSASNow)
@@ -384,8 +370,8 @@ namespace AutomatedPopularPreLaunchExperiment
                                     smIsCalled = false;
                                     activateSASNow = false;
                                 }
-                                else return;                               
-                                
+                                else return;
+
                             }
                             else
                             {
@@ -398,9 +384,10 @@ namespace AutomatedPopularPreLaunchExperiment
                         {
                             return;
                         }
-                    }                    
+                    }
                 }
-                catch { // internal error
+                catch
+                { // internal error
                 }
             }
         }
@@ -414,42 +401,40 @@ namespace AutomatedPopularPreLaunchExperiment
             {
                 currentHeight = FlightGlobals.ActiveVessel.heightFromTerrain;
 
-                    if (!armStatus)                                 // requires min height arming to prevent action on startup
+                if (!armStatus)                                 // requires min height arming to prevent action on startup
+                {
+                    if (currentHeight >= armHeight)
                     {
-                        if (currentHeight >= armHeight)
-                        {
-                            armStatus = true;
-                        }
-                        else armStatus = false;
+                        armStatus = true;
+                    }
+                    else armStatus = false;
+                }
+
+                // only called if armStatus is true...
+
+                else
+                {
+
+                    if (currentHeight <= depHeight && !gearIsDeployed)
+                    {
+                        FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.Gear, true);
+                        gearIsDeployed = true;
                     }
 
-                    // only called if armStatus is true...
-
-                    else
+                    else if (currentHeight <= depHeight && gearIsDeployed)
                     {
+                        return;
+                    }
 
-                        if (currentHeight <= depHeight && !gearIsDeployed)
-                        {
-                            FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.Gear, true);
-                            gearIsDeployed = true;
-                        }
-
-                        else if (currentHeight <= depHeight && gearIsDeployed)
-                        {
-                            return;
-                        }
-
-                        else if (currentHeight >= retHeight && gearIsDeployed)
-                        {
-                            FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.Gear, false);
-                            gearIsDeployed = false;
-                            armStatus = false;
-                        }
-                        else if (currentHeight >= retHeight && !gearIsDeployed)
-                        {
-                            return;
-                        }
-
+                    else if (currentHeight >= retHeight && gearIsDeployed)
+                    {
+                        FlightGlobals.ActiveVessel.ActionGroups.SetGroup(KSPActionGroup.Gear, false);
+                        gearIsDeployed = false;
+                        armStatus = false;
+                    }
+                    else if (currentHeight >= retHeight && !gearIsDeployed)
+                    {
+                        return;
                     }
 
                 }
@@ -457,5 +442,7 @@ namespace AutomatedPopularPreLaunchExperiment
             }
 
         }
+
     }
+}
 

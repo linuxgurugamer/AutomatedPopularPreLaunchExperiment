@@ -21,7 +21,8 @@ NOTES
 - Options are configurable to be on/off in the Game Settings menu should you not require certain options
 - Vessel lights currently only trigger when vessel is active, to save resources.
 
-
+TODO
+Add KSPwheel support
 
 LICENCE
 
